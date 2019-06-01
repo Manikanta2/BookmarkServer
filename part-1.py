@@ -2,6 +2,13 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs, unquote
 import requests
 import os
+import threading
+from socketserver import ThreadingMixIn
+
+
+class ThreadHTTPServer(ThreadingMixIn, HTTPServer):
+    "This supports thread-based concurrency"
+
 
 form = '''<!DOCTYPE html>
 <title>Bookmark Server</title>
@@ -92,7 +99,7 @@ class MessageHandler(BaseHTTPRequestHandler):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
     server_address = ('', port)
-    httpd = HTTPServer(server_address, MessageHandler)
+    httpd = ThreadHTTPServer(server_address, MessageHandler)
     httpd.serve_forever()
 
 
